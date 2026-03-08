@@ -1,5 +1,4 @@
 ﻿using Cysharp.Threading.Tasks;
-using PahudProject.UI.Input;
 using UnityEngine.EventSystems;
 using InputButton = UnityEngine.EventSystems.PointerEventData.InputButton;
 
@@ -16,7 +15,7 @@ namespace PahudProject.Game.Nonogram
         {
             base.Awake();
             TileState = TileState.None;
-            if (view is TileButtonView tileView) tileView.UpdateSprite(TileState);
+            if (View is TileButtonView tileView) tileView.UpdateSprite(TileState);
         }
 
         public override void OnPointerUp(PointerEventData eventData)
@@ -31,7 +30,7 @@ namespace PahudProject.Game.Nonogram
             TileColor = colorCode;
             Column = column;
             Row = row;
-            if (view is TileButtonView tileView) tileView.SetColor(colorCode);
+            if (View is TileButtonView tileView) tileView.SetColor(colorCode);
         }
 
         private void ChangeState(InputButton input)
@@ -52,13 +51,13 @@ namespace PahudProject.Game.Nonogram
                     break;
             }
 
-            if (view is TileButtonView tileView) tileView.UpdateSprite(TileState);
+            if (View is TileButtonView tileView) tileView.UpdateSprite(TileState);
         }
 
         public async UniTask RevealColor()
         {
             if (string.IsNullOrEmpty(TileColor)) return;
-            if (view is TileButtonView tileView)
+            if (View is TileButtonView tileView)
             {
                 await tileView.RevealColor();
             }
@@ -67,7 +66,7 @@ namespace PahudProject.Game.Nonogram
         public void ResetData()
         {
             TileState = TileState.None;
-            if (view is TileButtonView tileView)
+            if (View is TileButtonView tileView)
             {
                 tileView.ResetView();
             }

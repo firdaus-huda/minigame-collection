@@ -1,12 +1,8 @@
 ﻿using DG.Tweening;
-using PahudProject.Common;
-using PahudProject.UI.Input;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
-namespace PahudProject.UI.Common
-{
-    public class AudioButtonController: ButtonController
+public class AudioButtonController: ButtonController
     {
         [SerializeField] private AudioVolumeSlider volumeSlider;
 
@@ -17,6 +13,7 @@ namespace PahudProject.UI.Common
         [SerializeField] private bool _isClickingSlider;
 
         private Tweener _scaleTween;
+        private GameSettings _gameSettings;
         protected override void Awake()
         {
             base.Awake();
@@ -24,8 +21,10 @@ namespace PahudProject.UI.Common
             volumeSlider.IsClicked += OnSliderClickChanged;
             
             volumeSlider.gameObject.SetActive(false);
-            GameSettings.VolumeChanged += OnVolumeChanged;
-            if (view is AudioButtonView audioButtonView) audioButtonView.UpdateSprite(GameSettings.GetVolume());
+            
+            _gameSettings = Service.GetService<GameSettings>();
+            _gameSettings.VolumeChanged += OnVolumeChanged;
+            if (View is AudioButtonView audioButtonView) audioButtonView.UpdateSprite(_gameSettings.GetVolume());
         }
 
         protected override void OnDestroy()
@@ -33,15 +32,25 @@ namespace PahudProject.UI.Common
             base.OnDestroy();
             volumeSlider.IsHovered -= OnSliderHoverChanged;
             volumeSlider.IsClicked -= OnSliderClickChanged;
-            GameSettings.VolumeChanged -= OnVolumeChanged;
+            _gameSettings.VolumeChanged -= OnVolumeChanged;
         }
 
         private void OnVolumeChanged(float volume)
         {
-            if (view is AudioButtonView audioView)
+            if (View is AudioButtonView audioView)
             {
                 audioView.UpdateSprite(volume);
             }
+        }
+
+        private void OnEnable()
+        {
+            var volume = _gameSettings.GetVolume();
+            if (View is AudioButtonView audioView)
+            {
+                audioView.UpdateSprite(volume);
+            }
+            volumeSlider.SetValue(volume);
         }
 
         public override void OnPointerEnter(PointerEventData eventData)
@@ -63,7 +72,7 @@ namespace PahudProject.UI.Common
         public override void OnPointerUp(PointerEventData eventData)
         {
             base.OnPointerUp(eventData);
-            volumeSlider.SetValue(GameSettings.GetVolume() > 0f ? 0f : 0.5f);
+            volumeSlider.SetValue(_gameSettings.GetVolume() > 0f ? 0f : 0.5f);
         }
 
         private void OnSliderHoverChanged(bool hovered)
@@ -96,4 +105,3 @@ namespace PahudProject.UI.Common
             _scaleTween = volumeSlider.transform.DOScale(0.5f, AnimationDuration).SetEase(Ease.InQuart).OnComplete(() => volumeSlider.gameObject.SetActive(false));
         }
     }
-}

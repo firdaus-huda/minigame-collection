@@ -306,6 +306,7 @@ MonoBehaviour:
   restartButton: {fileID: 2506989045089099035}
   shuffleButton: {fileID: 626900471360717966}
   guideButton: {fileID: 1096336148782707521}
+  guidePopup: {fileID: 3546069003256977286, guid: 3dc94548aea81e94da43b449dc3af7b4, type: 3}
 --- !u!223 &9192207935670535968 stripped
 Canvas:
   m_CorrespondingSourceObject: {fileID: 1679954946913968772, guid: 8e7c144bf4a9a4c47af5fc3ea47b07cf, type: 3}

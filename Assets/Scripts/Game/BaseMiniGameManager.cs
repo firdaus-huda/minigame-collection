@@ -1,28 +1,33 @@
 using System;
 using Cysharp.Threading.Tasks;
-using PahudProject.Enum;
 using UnityEngine;
 
-namespace PahudProject.Game
+public abstract class BaseMiniGameManager : MonoBehaviour
 {
-    public abstract class BaseMiniGameManager : MonoBehaviour
+    public event Action IsReady;
+    public event Action IsDestroyed;
+
+    public virtual void Initialize()
     {
-        public abstract MiniGameType MiniGameType { get; }
-        public event Action IsReady;
-        public event Action IsDestroyed;
-        public abstract UniTask Initialize();
+        AudioEngine = Service.GetService<AudioEngine>();
+    }
 
-        protected void OnInitialized()
-        {
-            IsReady?.Invoke();
-        }
+    protected AudioEngine AudioEngine;
 
-        public abstract void StartGame();
-        public abstract UniTask Destroy();
+    protected void OnInitialized()
+    {
+        IsReady?.Invoke();
+    }
 
-        protected void OnDestroyed()
-        {
-            IsDestroyed?.Invoke();
-        }
+    public abstract UniTask StartGame();
+
+    public virtual void Destroy()
+    {
+        OnDestroyed();
+    }
+
+    private void OnDestroyed()
+    {
+        IsDestroyed?.Invoke();
     }
 }

@@ -1,13 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Linq;
 using Cysharp.Threading.Tasks;
 using Newtonsoft.Json;
-using PahudProject.Common;
-using PahudProject.Enum;
-using PahudProject.Game;
-using PahudProject.Game.Memory;
-using PahudProject.UI.Input;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
@@ -15,8 +8,6 @@ namespace PahudProject.Game.Nonogram
 {
     public class NonogramMiniGameManager : BaseMiniGameManager
     {
-        public override MiniGameType MiniGameType => MiniGameType.Nonogram;
-
         [SerializeField] private TextAsset levelDataText;
         [SerializeField] private LevelSpawner levelSpawner;
         [SerializeField] private Canvas canvas;
@@ -25,6 +16,7 @@ namespace PahudProject.Game.Nonogram
         [SerializeField] private ButtonController restartButton;
         [SerializeField] private ButtonController shuffleButton;
         [SerializeField] private ButtonController guideButton;
+        [SerializeField] private PopupController guidePopup;
         
         private LevelData _levelData;
         private LevelDetail _currentLevelDetail;
@@ -64,27 +56,29 @@ namespace PahudProject.Game.Nonogram
 
         private void OnGuideButtonClicked()
         {
-
+            guidePopup.Show(transform);
         }
 
-        public override UniTask Initialize()
+        public override void Initialize()
         {
+            base.Initialize();
             _levelData = JsonConvert.DeserializeObject<LevelData>(levelDataText.text);
             canvas.worldCamera = Camera.main;
             levelSpawner.Initialize();
             OnInitialized();
-            return UniTask.CompletedTask;
         }
 
-        public override void StartGame()
+        public override UniTask StartGame()
         {
             StartLevel(Random.Range(1,_levelData.Levels.Count));
             _gameStarted = true;
+
+            return UniTask.CompletedTask;
         }
 
         private void StartLevel(int level)
         {
-            var data = _levelData.Levels.Find(x => x.Level == level);
+            var data = _levelData.Levels.Find(x => x.level == level);
             _currentLevelDetail = data;
             var tiles = levelSpawner.SpawnLevel(data);
             foreach (var tile in tiles)
@@ -92,7 +86,7 @@ namespace PahudProject.Game.Nonogram
                 tile.ButtonUp += OnTileClicked;
             }
             _currentTiles = tiles;
-            AudioEngine.PlayBGM(BGMType.Nonogram);
+            AudioEngine.PlayBgm("Nonogram");
         }
 
         private void OnTileClicked()
@@ -103,7 +97,7 @@ namespace PahudProject.Game.Nonogram
         private void CheckTilesValid()
         {
             var tileValues = _currentTiles.Select(x => x.TileState == TileState.Fill);
-            var validValues = _currentLevelDetail.Tiles.Select(x => !string.IsNullOrEmpty(x));
+            var validValues = _currentLevelDetail.tiles.Select(x => !string.IsNullOrEmpty(x));
 
             var valid = tileValues.SequenceEqual(validValues);
             if (valid) OnLevelFinished();
@@ -112,7 +106,7 @@ namespace PahudProject.Game.Nonogram
         private async void OnLevelFinished()
         {
             _gameStarted = false;
-            AudioEngine.PlaySfx(SFXType.Win);
+            AudioEngine.PlaySfx("Win");
             winEffect.Play();
             foreach (var tile in _currentTiles)
             {
@@ -121,15 +115,15 @@ namespace PahudProject.Game.Nonogram
             }
             
             await PlayWinAnimation();
-            await new WaitForSeconds(2f);
+            await Delay.Seconds(2f);
             levelSpawner.ClearLevel();
             StartGame();
 
             async UniTask PlayWinAnimation()
             {
                 //Play win fx
-                await new WaitForSeconds(2f);
-                for (int i = 0; i < _currentLevelDetail.ColumnCount; i++)
+                await Delay.Seconds(2f);
+                for (int i = 0; i < _currentLevelDetail.columnCount; i++)
                 {
                     var tiles = _currentTiles.Where(x => x.Column == i);
                     foreach (var tile in tiles)
@@ -140,11 +134,10 @@ namespace PahudProject.Game.Nonogram
             }
         }
 
-        public override UniTask Destroy()
+        public override void Destroy()
         {
             Destroy(gameObject);
-            OnDestroyed();
-            return UniTask.CompletedTask;
+            base.Destroy();
         }
     }
 }
