@@ -1059,8 +1059,22 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 6600947879982897765, guid: 8e7c144bf4a9a4c47af5fc3ea47b07cf, type: 3}
+      propertyPath: m_Sprite
+      value: 
+      objectReference: {fileID: 21300000, guid: ebe3821275bec4ae6a723fa17fb5b9ff, type: 3}
+    - target: {fileID: 6986809398074821052, guid: 8e7c144bf4a9a4c47af5fc3ea47b07cf, type: 3}
+      propertyPath: m_text
+      value: Memory
+      objectReference: {fileID: 0}
+    - target: {fileID: 7581993709356380588, guid: 8e7c144bf4a9a4c47af5fc3ea47b07cf, type: 3}
+      propertyPath: m_Name
+      value: LevelSelectButton
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
-    m_RemovedGameObjects: []
+    m_RemovedGameObjects:
+    - {fileID: 7512143168786876414, guid: 8e7c144bf4a9a4c47af5fc3ea47b07cf, type: 3}
+    - {fileID: 7499435076495907346, guid: 8e7c144bf4a9a4c47af5fc3ea47b07cf, type: 3}
     m_AddedGameObjects:
     - targetCorrespondingSourceObject: {fileID: 5727347801102737139, guid: 8e7c144bf4a9a4c47af5fc3ea47b07cf, type: 3}
       insertIndex: 2
@@ -1076,11 +1090,27 @@ PrefabInstance:
       insertIndex: -1
       addedObject: {fileID: 2970681230843401760}
   m_SourcePrefab: {fileID: 100100000, guid: 8e7c144bf4a9a4c47af5fc3ea47b07cf, type: 3}
+--- !u!1 &620456141861565194 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 6943816044331062958, guid: 8e7c144bf4a9a4c47af5fc3ea47b07cf, type: 3}
+  m_PrefabInstance: {fileID: 7548365534159234468}
+  m_PrefabAsset: {fileID: 0}
 --- !u!224 &1396692848056384297 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 8909002743526874765, guid: 8e7c144bf4a9a4c47af5fc3ea47b07cf, type: 3}
   m_PrefabInstance: {fileID: 7548365534159234468}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &2506989045089099035 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 5335555223128127679, guid: 8e7c144bf4a9a4c47af5fc3ea47b07cf, type: 3}
+  m_PrefabInstance: {fileID: 7548365534159234468}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 06516bd4df4b4be40ae70ffa391047c9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PahudProject.UI.Input.ButtonController
 --- !u!224 &2862756709020678999 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 5727347801102737139, guid: 8e7c144bf4a9a4c47af5fc3ea47b07cf, type: 3}
@@ -1149,6 +1179,8 @@ MonoBehaviour:
   blocker: {fileID: 7122325992568517191}
   canvas: {fileID: 9192207935670535968}
   winEffect: {fileID: 4733330890956712594}
+  levelSelectButton: {fileID: 2506989045089099035}
+  sidebar: {fileID: 620456141861565194}
 --- !u!223 &9192207935670535968 stripped
 Canvas:
   m_CorrespondingSourceObject: {fileID: 1679954946913968772, guid: 8e7c144bf4a9a4c47af5fc3ea47b07cf, type: 3}

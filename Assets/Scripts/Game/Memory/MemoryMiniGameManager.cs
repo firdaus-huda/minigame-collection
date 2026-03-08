@@ -1,11 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Threading;
+﻿using System.Collections.Generic;
 using Cysharp.Threading.Tasks;
-using PahudProject.Common;
-using PahudProject.Enum;
-using PahudProject.Game;
-using PahudProject.UI.Input;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
@@ -13,8 +7,6 @@ namespace PahudProject.Game.Memory
 {
     public class MemoryMiniGameManager : BaseMiniGameManager
     {
-        public override MiniGameType MiniGameType => MiniGameType.Memory;
-        
         [SerializeField] private LevelSelectCanvas levelSelectCanvas;
         [SerializeField] private Card cardPrefab;
         [SerializeField] private Transform poolParent;
@@ -22,24 +14,27 @@ namespace PahudProject.Game.Memory
         [SerializeField] private GameObject blocker;
         [SerializeField] private Canvas canvas;
         [SerializeField] private ParticleSystem winEffect;
+        [SerializeField] private ButtonController levelSelectButton;
+        [SerializeField] private GameObject sidebar;
 
         private const int EasyCardCount = 12;
         private const int MediumCardCount = 18;
         private const int HardCardCount = 24;
         private const int PoolCount = 24;
-        private List<Card> _pooledCards = new();
-        private List<Card> _usedCards = new();
+        private readonly List<Card> _pooledCards = new();
+        private readonly List<Card> _usedCards = new();
 
         private Card _revealedCardValueA;
         private Card _revealedCardValueB;
  
-        public override UniTask Initialize()
+        public override void Initialize()
         {
+            base.Initialize();
+            levelSelectButton.ButtonUp += OnLevelSelectButtonClicked;
             levelSelectCanvas.Hide();
             canvas.worldCamera = Camera.main;
             PoolCard();
             OnInitialized();
-            return UniTask.CompletedTask;
 
             void PoolCard()
             {
@@ -53,18 +48,19 @@ namespace PahudProject.Game.Memory
             }
         }
 
-        public override async void StartGame()
+        public override async UniTask StartGame()
         {
             blocker.SetActive(false);
-            AudioEngine.PlayBGM(BGMType.Memory);
+            sidebar.SetActive(false);
+            AudioEngine.PlayBgm("Memory");
             ClearLevel();
             var difficulty = await levelSelectCanvas.Show();
             levelSelectCanvas.Hide();
-            
-            StartGameSequence(difficulty);
+            sidebar.SetActive(true);
+            _ = StartGameSequence(difficulty);
         }
         
-        private async void StartGameSequence(Difficulty difficulty)
+        private async UniTask StartGameSequence(Difficulty difficulty)
         {
             PrepareCards();
             await CreateCardAnimationSequence();
@@ -119,10 +115,10 @@ namespace PahudProject.Game.Memory
                 blocker.SetActive(true);
                 foreach (var card in _usedCards)
                 {
-                    await new WaitForSeconds(0.05f);
+                    await Delay.Seconds(0.05f);
                     card.Show();
                     card.SetEnableInput(true);
-                    AudioEngine.PlaySfx(SFXType.MemoryCardShow);
+                    AudioEngine.PlaySfx("MemoryCardShow");
                 }
 
                 blocker.SetActive(false);
@@ -154,7 +150,7 @@ namespace PahudProject.Game.Memory
             blocker.SetActive(false);
         }
 
-        private async void ValidateCards()
+        private async UniTask ValidateCards()
         {
             blocker.SetActive(true);
             if (_revealedCardValueA.Value == _revealedCardValueB.Value)
@@ -163,14 +159,14 @@ namespace PahudProject.Game.Memory
                 _revealedCardValueB.SetEnableInput(false);
                 _revealedCardValueA.Matched = true;
                 _revealedCardValueB.Matched = true;
-                AudioEngine.PlaySfx(SFXType.MemoryCardMatched);
+                AudioEngine.PlaySfx("MemoryCardMatched");
             }
             else
             {
-                AudioEngine.PlaySfx(SFXType.MemoryCardNotMatched);
+                AudioEngine.PlaySfx("MemoryCardNotMatched");
                 _revealedCardValueA.TriggerUnmatchedEvent();
                 _revealedCardValueB.TriggerUnmatchedEvent();
-                await new WaitForSeconds(1f);
+                await Delay.Seconds(1f);
                 _revealedCardValueA.Conceal();
                 _revealedCardValueB.Conceal();
             }
@@ -184,9 +180,10 @@ namespace PahudProject.Game.Memory
                 if (!card.Matched) return;
             }
             winEffect.Play();
-            AudioEngine.PlaySfx(SFXType.Win);
-            await new WaitForSeconds(2f);
-            StartGame();
+            sidebar.SetActive(false);
+            AudioEngine.PlaySfx("Win");
+            await Delay.Seconds(3f);
+            _ = StartGame();
         }
 
         private void ClearLevel()
@@ -200,12 +197,16 @@ namespace PahudProject.Game.Memory
             _usedCards.Clear();
         }
 
-        public override UniTask Destroy()
+        private void OnLevelSelectButtonClicked()
         {
-            _ = levelSelectCanvas.Destroy();
+            _ = StartGame();
+        }
+
+        public override void Destroy()
+        {
+            levelSelectButton.ButtonUp -= OnLevelSelectButtonClicked;
             Destroy(gameObject);
-            OnDestroyed();
-            return UniTask.CompletedTask;
+            base.Destroy();
         }
     }
 }

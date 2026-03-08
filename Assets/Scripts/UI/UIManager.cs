@@ -1,16 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
 using DG.Tweening;
-using PahudProject.Common;
-using PahudProject.Enum;
-using PahudProject.UI.Input;
 using UnityEngine;
+using UnityEngine.InputSystem;
 using UnityEngine.UI;
 using Random = UnityEngine.Random;
 
-namespace PahudProject.UI
-{
-    public class UIManager: MonoBehaviour
+public class UIManager: MonoBehaviour
     {
         [SerializeField] private GameObject backgroundCanvas;
         [SerializeField] private Image backgroundImage;
@@ -21,11 +16,9 @@ namespace PahudProject.UI
         [SerializeField] private ButtonController randomizeBgButton;
         [SerializeField] private ButtonController backButton;
 
-        [SerializeField] private List<Color> bgColors = new();
-
         public event Action ExitMiniGameClicked;
 
-        private const float FadeDuration = 0.5f;
+        private const float FadeDuration = 0.2f;
         private CanvasGroup _currentActiveCanvas;
         private Sequence _transitionSequence;
         
@@ -42,6 +35,15 @@ namespace PahudProject.UI
             backgroundImage.material = Instantiate(backgroundImage.material);
         }
 
+        private void Update()
+        {
+            if (Keyboard.current.escapeKey.wasPressedThisFrame)
+            {
+                if (GameManager.CurrentGameState != GameState.Playing) return;
+                OnBackButtonClicked();
+            }
+        }
+
         private void OnDestroy()
         {
             GameManager.GameStateChanged -= OnGameStateChanged;
@@ -54,14 +56,8 @@ namespace PahudProject.UI
             switch (gameState)
             {
                 case GameState.Menu:
-                    CreateTransition(_currentActiveCanvas, mainMenuCanvas);
+                    CreateTransition(_currentActiveCanvas, mainMenuCanvas, true);
                     _currentActiveCanvas = mainMenuCanvas;
-                    break;
-                case GameState.Loading:
-                    _currentActiveCanvas.alpha = 0f;
-                    _currentActiveCanvas.interactable = false;
-                    _currentActiveCanvas = loadingCanvas;
-                    loadingCanvas.alpha = 1;
                     break;
                 case GameState.Playing:
                     CreateTransition(_currentActiveCanvas, gameCanvas);
@@ -70,16 +66,27 @@ namespace PahudProject.UI
             }
         }
 
-        private void CreateTransition(CanvasGroup from, CanvasGroup to)
+        private void CreateTransition(CanvasGroup from, CanvasGroup to, bool immediate = false)
         {
             if(from == to) return;
             
             _transitionSequence?.Kill();
             _transitionSequence = DOTween.Sequence();
 
-            _transitionSequence.AppendCallback(() => from.interactable = false);
-            _transitionSequence.Append(from.DOFade(0f, FadeDuration));
+            if (immediate)
+            {
+                from.alpha = 0f;
+                from.gameObject.SetActive(false);
+            }
+            else
+            {
+                _transitionSequence.AppendCallback(() => from.interactable = false);
+                _transitionSequence.Append(from.DOFade(0f, FadeDuration));
+                _transitionSequence.AppendCallback(() => from.gameObject.SetActive(false));
+            }
 
+            _transitionSequence.AppendInterval(FadeDuration);
+            _transitionSequence.AppendCallback(() => to.gameObject.SetActive(true));
             _transitionSequence.Append(to.DOFade(1f, FadeDuration));
             _transitionSequence.AppendCallback(() => to.interactable = true);
         }
@@ -97,4 +104,3 @@ namespace PahudProject.UI
             backgroundImage.material.SetColor("_Color", Random.ColorHSV(0f, 1f, 0.25f, 0.5f, 1f, 1f));
         }
     }
-}

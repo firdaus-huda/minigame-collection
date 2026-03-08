@@ -11,8 +11,8 @@ namespace PahudProject.Game.Nonogram
     [Serializable]
     public class LevelDetail
     {
-        public int Level;
-        public int ColumnCount;
-        public List<string> Tiles = new();
+        public int level;
+        public int columnCount;
+        public List<string> tiles = new();
     }
 }

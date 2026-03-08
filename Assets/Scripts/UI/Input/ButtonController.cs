@@ -2,64 +2,61 @@ using System;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
-namespace PahudProject.UI.Input
+public class ButtonController : MonoBehaviour, IPointerDownHandler, IPointerUpHandler, IPointerExitHandler, IPointerEnterHandler
 {
-	public class ButtonController : MonoBehaviour, IPointerDownHandler, IPointerUpHandler, IPointerExitHandler, IPointerEnterHandler
-	{
-		protected ButtonView view;
+    protected ButtonView View;
         
-		public event Action ButtonUp;
-		public event Action ButtonDown;
+    public event Action ButtonUp;
+    public event Action ButtonDown;
 
-		private bool _isClick;
-		protected bool inputEnabled = true;
+    private bool _isClick;
+    protected bool inputEnabled = true;
 
-		protected virtual void Awake()
-		{
-			view = GetComponent<ButtonView>();
-		}
+    protected virtual void Awake()
+    {
+        View = GetComponent<ButtonView>();
+    }
 
-		public virtual void OnPointerDown(PointerEventData eventData)
-		{
-			if (!inputEnabled) return;
-			if (view != null) { view.OnPointerDown(); }
+    public virtual void OnPointerDown(PointerEventData eventData)
+    {
+        if (!inputEnabled) return;
+        if (View != null) { View.OnPointerDown(); }
 
-			_isClick = true;
-			ButtonDown?.Invoke();
-		}
+        _isClick = true;
+        ButtonDown?.Invoke();
+    }
 
-		public virtual void OnPointerUp(PointerEventData eventData)
-		{
-			if (!inputEnabled) return;
-			if (view != null) { view.OnPointerUp(); }
+    public virtual void OnPointerUp(PointerEventData eventData)
+    {
+        if (!inputEnabled) return;
+        if (View != null) { View.OnPointerUp(); }
 
-			if (_isClick) ButtonUp?.Invoke();
-		}
+        if (_isClick) ButtonUp?.Invoke();
+    }
 		
-		public virtual void OnPointerExit(PointerEventData eventData)
-		{
-			if (!inputEnabled) return;
-			_isClick = false;
-			view.OnPointerExit();
-		}
+    public virtual void OnPointerExit(PointerEventData eventData)
+    {
+        if (!inputEnabled) return;
+        _isClick = false;
+        if (View == null) return; 
+        View.OnPointerExit();
+    }
 		
-		public virtual void OnPointerEnter(PointerEventData eventData)
-		{
-			if (!inputEnabled) return;
-			view.OnPointerEnter();
-		}
+    public virtual void OnPointerEnter(PointerEventData eventData)
+    {
+        if (!inputEnabled) return;
+        if (View == null) return; 
+        View.OnPointerEnter();
+    }
 
-		public void SetEnableInput(bool enable)
-		{
-			inputEnabled = enable;
-		}
+    public void SetEnableInput(bool enable)
+    {
+        inputEnabled = enable;
+    }
 		
-		protected virtual void OnDestroy()
-		{
-			ButtonUp = null;
-			ButtonDown = null;
-		}
-
-		
-	}
+    protected virtual void OnDestroy()
+    {
+        ButtonUp = null;
+        ButtonDown = null;
+    }
 }

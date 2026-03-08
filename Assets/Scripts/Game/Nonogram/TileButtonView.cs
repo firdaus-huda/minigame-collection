@@ -1,9 +1,6 @@
 ﻿using System;
 using Cysharp.Threading.Tasks;
 using DG.Tweening;
-using PahudProject.Common;
-using PahudProject.Enum;
-using PahudProject.UI.Input;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -25,13 +22,13 @@ namespace PahudProject.Game.Nonogram
             switch (_currentState)
             {
                 case TileState.None:
-                    AudioEngine.PlaySfx(SFXType.NonogramTileButtonClear);
+                    AudioEngine.PlaySfx("NonogramTileButtonClear");
                     break;
                 case TileState.Block:
-                    AudioEngine.PlaySfx(SFXType.NonogramTileButtonBlock);
+                    AudioEngine.PlaySfx("NonogramTileButtonBlock");
                     break;
                 case TileState.Fill:
-                    AudioEngine.PlaySfx(SFXType.NonogramTileButtonFill);
+                    AudioEngine.PlaySfx("NonogramTileButtonFill");
                     break;
             }
         }

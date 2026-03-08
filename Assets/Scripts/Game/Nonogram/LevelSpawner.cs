@@ -1,7 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using Cysharp.Threading.Tasks;
-using PahudProject.UI.Input;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -36,8 +34,8 @@ namespace PahudProject.Game.Nonogram
         
         public TileButtonController[] SpawnLevel(LevelDetail levelDetail)
         {
-            var tileInfo = levelDetail.Tiles;
-            var columnCount = levelDetail.ColumnCount;
+            var tileInfo = levelDetail.tiles;
+            var columnCount = levelDetail.columnCount;
             var rowCount = tileInfo.Count / columnCount;
 
             int currentColumn = 0;
