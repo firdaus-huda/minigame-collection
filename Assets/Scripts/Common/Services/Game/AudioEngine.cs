@@ -50,6 +50,7 @@ public class AudioEngine : IGameService
             {
                 _gameSettings.VolumeChanged += OnVolumeChanged;
                 _bgmFadeInTweener = _bgmSource.DOFade(_gameSettings.GetVolume(), 1f).SetAutoKill(false).Pause();
+                _sfxSource.volume = _gameSettings.GetVolume();
             }
             
             return UniTask.CompletedTask;
@@ -97,7 +98,6 @@ public class AudioEngine : IGameService
                 }
 
                 _sfxSource.loop = false;
-                _sfxSource.volume = 1f;
                 _sfxSource.pitch = randomizePitch ? Random.Range(0.9f, 1.1f) : 1f;
                 _sfxSource.PlayOneShot(clip);
             }

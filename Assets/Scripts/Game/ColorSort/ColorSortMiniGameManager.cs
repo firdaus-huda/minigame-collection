@@ -191,6 +191,7 @@ public class ColorSortMiniGameManager : BaseMiniGameManager
             }
 
             List<BallColor> usedColors = Enum.GetValues(typeof(BallColor)).Cast<BallColor>().ToList();
+            usedColors.Remove(BallColor.None);
             usedColors.Shuffle();
             List<Ball> balls = new();
             
