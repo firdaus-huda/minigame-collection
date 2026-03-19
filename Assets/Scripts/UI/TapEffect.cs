@@ -9,7 +9,7 @@ public class TapEffect: MonoBehaviour
         [SerializeField] private Canvas canvas;
         [SerializeField] private Transform parent;
 
-        private List<RectTransform> _effectPool = new();
+        private readonly List<RectTransform> _effectPool = new();
         private const int InitialPoolCount = 5;
         private float _effectDuration;
         private void Awake()
